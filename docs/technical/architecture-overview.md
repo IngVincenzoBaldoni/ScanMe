@@ -17,6 +17,23 @@ Per l'MVP la soluzione migliore e' un'architettura serverless su AWS:
 - Business logic su `AWS Lambda`
 - Persistenza su `Amazon DynamoDB`
 
+## Servizi inclusi nel primo deploy
+
+- `S3`
+- `CloudFront`
+- `DynamoDB`
+- `Lambda`
+- `API Gateway HTTP API`
+- `IAM`
+- `CloudWatch Logs`
+
+Servizi esclusi dal primo deploy:
+
+- `Cognito`
+- `Route53`
+- `ACM`
+- `WAF`
+
 ## Flussi principali
 
 ### Redirect pubblico

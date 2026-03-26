@@ -8,6 +8,11 @@ output "frontend_distribution_domain_name" {
   value       = module.frontend.cloudfront_domain_name
 }
 
+output "frontend_distribution_id" {
+  description = "Distribution ID CloudFront."
+  value       = module.frontend.cloudfront_distribution_id
+}
+
 output "api_base_url" {
   description = "Invoke URL dell'API."
   value       = module.api.api_base_url

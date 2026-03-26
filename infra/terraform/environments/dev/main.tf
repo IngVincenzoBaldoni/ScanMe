@@ -1,15 +1,13 @@
 module "data" {
   source = "../../modules/data"
 
-  project_name = var.project_name
-  environment  = var.environment
+  name_prefix = var.name_prefix
 }
 
 module "api" {
   source = "../../modules/api"
 
-  project_name                    = var.project_name
-  environment                     = var.environment
+  name_prefix                     = var.name_prefix
   allowed_cors_origins            = var.allowed_cors_origins
   links_table_name                = module.data.links_table_name
   links_table_arn                 = module.data.links_table_arn
@@ -25,7 +23,6 @@ module "api" {
 module "frontend" {
   source = "../../modules/frontend"
 
-  project_name         = var.project_name
-  environment          = var.environment
+  name_prefix          = var.name_prefix
   frontend_bucket_name = var.frontend_bucket_name
 }

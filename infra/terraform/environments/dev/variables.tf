@@ -16,9 +16,28 @@ variable "aws_region" {
   default     = "eu-west-1"
 }
 
-variable "frontend_bucket_name" {
-  description = "Nome bucket S3 frontend. Lasciare placeholder finche' non si definisce l'account."
+variable "aws_account_id" {
+  description = "AWS account ID di destinazione."
   type        = string
+  default     = "265020547280"
+}
+
+variable "aws_account_name" {
+  description = "Nome logico dell'account AWS."
+  type        = string
+  default     = "scanme_official"
+}
+
+variable "name_prefix" {
+  description = "Prefisso naming condiviso da tutte le risorse del deploy dev."
+  type        = string
+  default     = "it-dev-scanme"
+}
+
+variable "frontend_bucket_name" {
+  description = "Nome bucket S3 frontend."
+  type        = string
+  default     = "it-dev-scanme-s3-frontend-265020547280"
 }
 
 variable "allowed_cors_origins" {
@@ -54,17 +73,17 @@ variable "fallback_url" {
 variable "redirect_lambda_package_path" {
   description = "Percorso locale del package zip della Lambda redirect."
   type        = string
-  default     = "PLACEHOLDER/redirect.zip"
+  default     = "../../../../artifacts/redirect.zip"
 }
 
 variable "management_lambda_package_path" {
   description = "Percorso locale del package zip della Lambda gestione."
   type        = string
-  default     = "PLACEHOLDER/management.zip"
+  default     = "../../../../artifacts/management.zip"
 }
 
 variable "claim_lambda_package_path" {
   description = "Percorso locale del package zip della Lambda creazione maglietta MVP."
   type        = string
-  default     = "PLACEHOLDER/claim.zip"
+  default     = "../../../../artifacts/claim.zip"
 }

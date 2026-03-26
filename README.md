@@ -14,6 +14,16 @@ Il valore di business del progetto e' la possibilita' per l'utente di cambiare i
 - Data: Amazon DynamoDB per mapping QR -> link target.
 - IaC: Terraform modulare con environment separati.
 
+## Servizi AWS del primo deploy `dev`
+
+- `Amazon S3`: bucket privato per i file statici del frontend.
+- `Amazon CloudFront`: distribuzione pubblica HTTPS del frontend.
+- `Amazon DynamoDB`: database del MVP per capi, link target e analytics scansioni.
+- `AWS Lambda`: logica backend per redirect, login admin, creazione capo e update link.
+- `Amazon API Gateway HTTP API`: esposizione degli endpoint backend.
+- `AWS IAM`: role e policy minime per le Lambda.
+- `Amazon CloudWatch Logs`: log runtime generati automaticamente dalle Lambda.
+
 ## Struttura repository
 
 - `docs/functional`: documentazione di prodotto e flussi utente.
@@ -35,7 +45,7 @@ Il valore di business del progetto e' la possibilita' per l'utente di cambiare i
 Questa repository contiene:
 
 - architettura iniziale consigliata;
-- scheletro Terraform con placeholder per account AWS, dominio e package Lambda;
+- Terraform pronto al naming `it-dev-scanme-*` per l'account `scanme_official`;
 - codice MVP frontend con dashboard QR, login admin e preview del QR code;
 - codice MVP Lambda per redirect, login admin, creazione e update maglietta;
 - linee guida per implementare FE e BE in modo coerente.
@@ -50,5 +60,6 @@ Non contiene ancora:
 1. Creare un account AWS dedicato al progetto.
 2. Configurare backend remoto Terraform e credenziali AWS.
 3. Installare Node.js e dipendenze locali con `npm install`.
-4. Provare il frontend con `npm run web:dev`.
-5. Eseguire il primo deploy nell'environment `dev`.
+4. Generare gli artifact con `npm run lambdas:package` e `npm run web:build`.
+5. Eseguire il primo deploy infrastrutturale in `infra/terraform/environments/dev`.
+6. Caricare il frontend buildato nel bucket S3 e invalidare CloudFront.

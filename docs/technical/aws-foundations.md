@@ -12,24 +12,40 @@ Consiglio operativo:
 
 Pattern suggerito:
 
-- `${project_name}-${environment}-${resource}`
+- `it-dev-scanme-(servizio-aws)-...`
 
 Esempio:
 
-- `scanme-dev-api`
-- `scanme-dev-frontend`
-- `scanme-dev-links`
+- `it-dev-scanme-apigateway-api`
+- `it-dev-scanme-s3-frontend-265020547280`
+- `it-dev-scanme-dynamodb-links`
 
 ## Placeholder da sostituire
 
 Prima del deploy reale dovranno essere valorizzati:
 
-- AWS account ID
-- regione AWS definitiva
-- eventuale dominio custom
-- certificate ACM
-- package delle Lambda
-- backend remoto Terraform
+- `admin_email`
+- `admin_password`
+- `admin_session_token`
+- `fallback_url` dopo il primo deploy frontend
+- backend remoto Terraform se vuoi stato remoto condiviso
+
+## Servizi AWS del primo deploy
+
+- `S3`
+- `CloudFront`
+- `DynamoDB`
+- `Lambda`
+- `API Gateway HTTP API`
+- `IAM`
+- `CloudWatch Logs`
+
+## Fuori scope del primo deploy
+
+- `Cognito`
+- `Route53`
+- `ACM`
+- `WAF`
 
 ## Sicurezza minima
 

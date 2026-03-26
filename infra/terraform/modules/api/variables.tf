@@ -1,8 +1,4 @@
-variable "project_name" {
-  type = string
-}
-
-variable "environment" {
+variable "name_prefix" {
   type = string
 }
 

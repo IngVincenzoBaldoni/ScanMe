@@ -26,5 +26,5 @@ Lo script `npm run package --workspace @scanme/lambdas` genera zip iniziali in `
 
 Nota importante:
 
-- lo script attuale include anche `node_modules`, quindi richiede `npm install` eseguito prima del packaging;
+- lo script attuale include anche `node_modules` della root del workspace, quindi richiede `npm install` eseguito prima del packaging;
 - per produzione conviene sostituire questo script con un packaging deterministico e una pipeline CI/CD.

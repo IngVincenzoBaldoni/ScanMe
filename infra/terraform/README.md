@@ -7,12 +7,14 @@ Questa cartella contiene lo scheletro IaC del progetto ScanMe.
 - `data`: Amazon DynamoDB
 - `api`: API Gateway + Lambda + IAM
 - `frontend`: S3 + CloudFront
+- `auth`: modulo legacy non usato dal deploy MVP attuale
 
 ## Nota
 
 I file sono pronti per essere completati con valori reali ma non possono essere applicati finche' non vengono definiti:
 
 - credenziali AWS;
-- backend remoto Terraform;
+- `admin_password`;
+- `admin_session_token`;
 - package delle Lambda;
-- eventuale dominio custom.
+- upload del frontend buildato su S3.

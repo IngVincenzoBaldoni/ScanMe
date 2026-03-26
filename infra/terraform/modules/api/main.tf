@@ -1,5 +1,5 @@
 resource "aws_iam_role" "lambda_exec" {
-  name = "${var.project_name}-${var.environment}-lambda-exec"
+  name = "${var.name_prefix}-iam-lambda-exec"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -21,7 +21,7 @@ resource "aws_iam_role_policy_attachment" "lambda_basic" {
 }
 
 resource "aws_iam_role_policy" "ddb_access" {
-  name = "${var.project_name}-${var.environment}-ddb-policy"
+  name = "${var.name_prefix}-iam-ddb-policy"
   role = aws_iam_role.lambda_exec.id
 
   policy = jsonencode({
@@ -36,8 +36,7 @@ resource "aws_iam_role_policy" "ddb_access" {
           "dynamodb:UpdateItem"
         ]
         Resource = [
-          var.links_table_arn,
-          "${var.links_table_arn}/index/*"
+          var.links_table_arn
         ]
       }
     ]
@@ -45,11 +44,12 @@ resource "aws_iam_role_policy" "ddb_access" {
 }
 
 resource "aws_lambda_function" "redirect" {
-  function_name = "${var.project_name}-${var.environment}-redirect"
+  function_name = "${var.name_prefix}-lambda-redirect"
   role          = aws_iam_role.lambda_exec.arn
   runtime       = "nodejs20.x"
-  handler       = "index.handler"
+  handler       = "redirect/index.handler"
   filename      = var.redirect_lambda_package_path
+  source_code_hash = filebase64sha256(var.redirect_lambda_package_path)
   timeout       = 5
 
   environment {
@@ -61,11 +61,12 @@ resource "aws_lambda_function" "redirect" {
 }
 
 resource "aws_lambda_function" "management" {
-  function_name = "${var.project_name}-${var.environment}-management"
+  function_name = "${var.name_prefix}-lambda-management"
   role          = aws_iam_role.lambda_exec.arn
   runtime       = "nodejs20.x"
-  handler       = "index.handler"
+  handler       = "management/index.handler"
   filename      = var.management_lambda_package_path
+  source_code_hash = filebase64sha256(var.management_lambda_package_path)
   timeout       = 10
 
   environment {
@@ -79,11 +80,12 @@ resource "aws_lambda_function" "management" {
 }
 
 resource "aws_lambda_function" "claim" {
-  function_name = "${var.project_name}-${var.environment}-claim"
+  function_name = "${var.name_prefix}-lambda-claim"
   role          = aws_iam_role.lambda_exec.arn
   runtime       = "nodejs20.x"
-  handler       = "index.handler"
+  handler       = "claim/index.handler"
   filename      = var.claim_lambda_package_path
+  source_code_hash = filebase64sha256(var.claim_lambda_package_path)
   timeout       = 10
 
   environment {
@@ -97,7 +99,7 @@ resource "aws_lambda_function" "claim" {
 }
 
 resource "aws_apigatewayv2_api" "this" {
-  name          = "${var.project_name}-${var.environment}-api"
+  name          = "${var.name_prefix}-apigateway-api"
   protocol_type = "HTTP"
 
   cors_configuration {

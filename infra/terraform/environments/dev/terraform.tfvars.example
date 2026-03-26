@@ -1,19 +1,21 @@
 project_name = "scanme"
 environment  = "dev"
 aws_region   = "eu-west-1"
+aws_account_id   = "265020547280"
+aws_account_name = "scanme_official"
+name_prefix      = "it-dev-scanme"
 
-frontend_bucket_name = "scanme-dev-frontend-PLACEHOLDER"
+frontend_bucket_name = "it-dev-scanme-s3-frontend-265020547280"
 
 allowed_cors_origins = [
-  "http://localhost:5173",
-  "https://frontend-domain-placeholder.cloudfront.net"
+  "http://localhost:5173"
 ]
 
 admin_email         = "your-admin-email@example.com"
 admin_password      = "PLACEHOLDER_STRONG_PASSWORD"
 admin_session_token = "PLACEHOLDER_RANDOM_SESSION_TOKEN"
-fallback_url        = "https://frontend-domain-placeholder.cloudfront.net"
+fallback_url        = ""
 
-redirect_lambda_package_path   = "artifacts/redirect.zip"
-management_lambda_package_path = "artifacts/management.zip"
-claim_lambda_package_path      = "artifacts/claim.zip"
+redirect_lambda_package_path   = "../../../../artifacts/redirect.zip"
+management_lambda_package_path = "../../../../artifacts/management.zip"
+claim_lambda_package_path      = "../../../../artifacts/claim.zip"
