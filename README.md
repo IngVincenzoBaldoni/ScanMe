@@ -10,8 +10,8 @@ Il valore di business del progetto e' la possibilita' per l'utente di cambiare i
 
 - Frontend: SPA statica ospitata su Amazon S3 e distribuita via CloudFront.
 - Backend: Amazon API Gateway + AWS Lambda per API pubbliche e private.
-- Auth: Amazon Cognito per registrazione, login e recupero password.
-- Data: Amazon DynamoDB per mapping QR -> link target e stato di ownership.
+- Auth MVP: login admin semplificato gestito dal backend.
+- Data: Amazon DynamoDB per mapping QR -> link target.
 - IaC: Terraform modulare con environment separati.
 
 ## Struttura repository
@@ -36,8 +36,8 @@ Questa repository contiene:
 
 - architettura iniziale consigliata;
 - scheletro Terraform con placeholder per account AWS, dominio e package Lambda;
-- codice iniziale frontend con mock auth e mock backend browser mode;
-- codice iniziale Lambda per redirect, claim e update link;
+- codice MVP frontend con dashboard QR, login admin e preview del QR code;
+- codice MVP Lambda per redirect, login admin, creazione e update maglietta;
 - linee guida per implementare FE e BE in modo coerente.
 
 Non contiene ancora:

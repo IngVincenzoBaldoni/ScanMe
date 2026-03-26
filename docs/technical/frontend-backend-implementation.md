@@ -4,24 +4,24 @@
 
 Il frontend iniziale e' una SPA React con tre macro-capacita':
 
-- login o signup in modalita' mock;
-- claim maglietta con activation code;
-- gestione del target URL delle magliette collegate.
+- login admin;
+- creazione di una nuova maglietta digitale;
+- preview del QR stabile e gestione del target URL.
 
-La UI e' progettata per essere semplice da evolvere verso Cognito reale e API reali, senza rifare la struttura.
+La UI e' progettata per essere semplice da evolvere verso autenticazione piu' robusta, senza rifare la struttura.
 
 ## Backend
 
 Le Lambda implementano i casi d'uso minimi del prodotto:
 
 - redirect pubblico;
-- claim della maglietta;
-- lista delle magliette per owner;
+- login admin MVP;
+- creazione della maglietta;
+- lista delle magliette;
 - update del target URL.
 
 ## Gap intenzionali
 
-- integrazione Cognito frontend ancora a placeholder;
-- seed iniziale magliette non ancora automatizzato;
+- autenticazione single-admin pensata per MVP e non per produzione;
 - analytics scansioni non ancora presenti;
 - packaging Lambda da irrobustire prima della produzione.

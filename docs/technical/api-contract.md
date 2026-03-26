@@ -7,26 +7,48 @@
 - Scopo: redirect pubblico verso il link attivo della maglietta.
 - Auth: nessuna.
 - Risposta attesa: `302` con header `Location`.
+- Fallback: se il QR non e' configurato, il backend restituisce una pagina HTML di fallback.
 
-## Endpoint autenticati
+## Endpoint admin MVP
 
-### `POST /v1/shirts/claim`
+Il target attuale e' un MVP single-admin. Gli endpoint privati sono protetti da login admin e token `Bearer`.
 
-- Scopo: associare una maglietta a un utente autenticato.
-- Auth: Cognito JWT.
-- Payload minimo:
+### `POST /v1/admin/login`
+
+- Scopo: autenticare l'admin del MVP.
+- Auth: nessuna.
+- Payload:
 
 ```json
 {
-  "activationCode": "ABC123-PLACEHOLDER"
+  "email": "founder@example.com",
+  "password": "ChangeMe123!"
+}
+```
+
+### `GET /v1/shirts`
+
+- Scopo: recuperare la lista delle magliette gestite dall'admin.
+- Auth: `Bearer token`.
+
+### `POST /v1/shirts`
+
+- Scopo: creare una nuova maglietta con QR dinamico.
+- Auth: `Bearer token`.
+- Payload:
+
+```json
+{
+  "label": "ScanMe Founder Tee",
+  "targetUrl": "https://example.com/my-profile"
 }
 ```
 
 ### `PUT /v1/shirts/{shirt_id}/target`
 
 - Scopo: aggiornare il link attivo.
-- Auth: Cognito JWT.
-- Payload minimo:
+- Auth: `Bearer token`.
+- Payload:
 
 ```json
 {
@@ -34,15 +56,9 @@
 }
 ```
 
-### `GET /v1/shirts`
-
-- Scopo: recuperare le magliette dell'utente autenticato.
-- Auth: Cognito JWT.
-
 ## Risposte d'errore minime
 
 - `400` input non valido
 - `401` non autenticato
-- `403` non autorizzato
 - `404` maglietta non trovata
-- `409` maglietta gia' reclamata
+- `409` conflitto su creazione

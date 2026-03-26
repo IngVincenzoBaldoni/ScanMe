@@ -12,7 +12,7 @@ Per l'MVP la soluzione migliore e' un'architettura serverless su AWS:
 ## Componenti
 
 - Frontend SPA `React + TypeScript + Vite` su `S3 + CloudFront`
-- Autenticazione su `Amazon Cognito`
+- Autenticazione MVP su `admin login semplificato`
 - API su `Amazon API Gateway HTTP API`
 - Business logic su `AWS Lambda`
 - Persistenza su `Amazon DynamoDB`
@@ -35,7 +35,6 @@ flowchart LR
 ```mermaid
 flowchart LR
   O[Owner autenticato] --> FE[Frontend Dashboard]
-  FE --> COG[Cognito]
   FE --> API[API Gateway]
   API --> L2[Lambda Manage Link]
   L2 --> DDB[DynamoDB]
@@ -47,28 +46,33 @@ flowchart LR
 - `Vite` accelera lo sviluppo locale e produce un output statico semplice da distribuire.
 - Una SPA e' sufficiente per dashboard, onboarding e gestione link.
 - Hosting statico su S3/CloudFront e' economico e semplice da distribuire.
-- Il frontend dialoga con Cognito e API Gateway tramite HTTPS.
+- Il frontend dialoga con API Gateway tramite HTTPS.
+- Per il day-1 e' stato scelto un login admin semplificato, piu' veloce da portare online rispetto a Cognito.
 
 ## Motivazioni BE
 
-- Lambda isola bene i casi d'uso: redirect, claim, update link.
-- API Gateway gestisce routing, CORS e integrazione con authorizer Cognito.
+- Lambda isola bene i casi d'uso: redirect, login admin, creazione QR, update link.
+- API Gateway gestisce routing e CORS senza costi fissi elevati.
 - DynamoDB offre letture rapide e latenza bassa, adatta al redirect.
 
-## Dominio dati minimo
+## Dominio dati MVP
 
-- `shirts`: anagrafica maglietta e owner attuale.
-- `redirects`: link attivo e metadati di aggiornamento.
+- `shirts`: maglietta, redirect stabile e link di destinazione corrente.
 
-Per l'MVP questi due concetti possono convivere anche in una singola tabella DynamoDB ben progettata.
+Per l'MVP tutto puo' convivere in una singola tabella DynamoDB.
 
 ## Nota implementativa FE
 
 Il frontend dovra' esporre almeno queste schermate:
 
 - landing di onboarding;
-- login e registrazione;
-- pagina claim maglietta;
+- login admin;
+- creazione della prima maglietta;
 - dashboard con lista magliette;
+- preview del QR code stabile;
 - form di aggiornamento URL;
 - fallback page per QR non ancora attivati.
+
+## Evoluzione futura
+
+Quando l'MVP sara' validato, il passo naturale sara' sostituire il login admin semplificato con Amazon Cognito e reintrodurre il self-service utente finale per il claim della maglietta.

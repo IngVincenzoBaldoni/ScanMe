@@ -11,14 +11,15 @@ Passi:
 
 1. Copiare [apps/web/.env.example](/Users/vincemartibalducci/Desktop/Projects/ScanMe/codebase/apps/web/.env.example) in `apps/web/.env`.
 2. Se non hai ancora API reali, puoi lasciare vuoto `VITE_SCANME_API_BASE_URL`: il frontend usera' un backend mock nel browser.
-3. Lasciare `VITE_SCANME_USE_MOCK_AUTH=true` finche' Cognito non viene integrato nel frontend.
+3. Lasciare `VITE_SCANME_USE_MOCK_AUTH=true` finche' non colleghi il backend AWS.
 4. Eseguire `npm install`.
 5. Eseguire `npm run web:dev`.
 
-Demo activation code disponibili in mock mode:
+Demo MVP disponibili in mock mode:
 
-- `ABC123-PLACEHOLDER`
-- `XYZ789-PLACEHOLDER`
+- login: qualsiasi email
+- password: qualsiasi password
+- una maglietta demo viene caricata automaticamente alla prima apertura
 
 ## Backend Lambda
 
@@ -29,6 +30,7 @@ Prerequisiti:
 
 Passi successivi consigliati:
 
-1. Seed iniziale di magliette in DynamoDB con activation code.
-2. Packaging reale delle Lambda.
-3. Configurazione di test integration contro environment `dev`.
+1. Generare package Lambda realmente deployabili.
+2. Configurare `admin_email`, `admin_password`, `admin_session_token` e `fallback_url` in Terraform.
+3. Effettuare deploy in `dev`.
+4. Creare la prima maglietta dalla dashboard.

@@ -3,7 +3,7 @@ const {
   DynamoDBDocumentClient,
   GetCommand,
   PutCommand,
-  QueryCommand,
+  ScanCommand,
   UpdateCommand
 } = require("@aws-sdk/lib-dynamodb");
 
@@ -20,12 +20,9 @@ const nowIso = () => new Date().toISOString();
 const buildShirtResponse = (item) => ({
   shirtId: item.shirtId,
   label: item.label,
-  activationCode: item.activationCode,
-  ownerUserId: item.ownerUserId,
   targetUrl: item.targetUrl,
   updatedAt: item.updatedAt,
-  claimedAt: item.claimedAt,
-  status: item.ownerUserId ? "claimed" : "unclaimed"
+  createdAt: item.createdAt
 });
 
 const getShirtById = async (shirtId) => {
@@ -42,66 +39,47 @@ const getShirtById = async (shirtId) => {
   return response.Item ?? null;
 };
 
-const getShirtByActivationCode = async (activationCode) => {
+const listShirts = async () => {
   const response = await client.send(
-    new QueryCommand({
+    new ScanCommand({
       TableName: tableName,
-      IndexName: "gsi1",
-      KeyConditionExpression: "gsi1pk = :gsi1pk AND gsi1sk = :gsi1sk",
+      FilterExpression: "begins_with(pk, :pkPrefix) AND sk = :sk",
       ExpressionAttributeValues: {
-        ":gsi1pk": `ACTIVATION#${activationCode}`,
-        ":gsi1sk": "PROFILE"
-      },
-      Limit: 1
-    })
-  );
-
-  return response.Items?.[0] ?? null;
-};
-
-const listShirtsByOwner = async (ownerUserId) => {
-  const response = await client.send(
-    new QueryCommand({
-      TableName: tableName,
-      IndexName: "gsi1",
-      KeyConditionExpression: "gsi1pk = :gsi1pk",
-      ExpressionAttributeValues: {
-        ":gsi1pk": `OWNER#${ownerUserId}`
+        ":pkPrefix": "SHIRT#",
+        ":sk": "PROFILE"
       }
     })
   );
 
-  return (response.Items ?? []).map(buildShirtResponse);
+  return (response.Items ?? []).map(buildShirtResponse).sort((a, b) => {
+    return (b.createdAt ?? "").localeCompare(a.createdAt ?? "");
+  });
 };
 
-const claimShirt = async ({ shirtId, ownerUserId }) => {
+const createShirt = async ({ shirtId, label, targetUrl }) => {
   const timestamp = nowIso();
+  const item = {
+    pk: `SHIRT#${shirtId}`,
+    sk: "PROFILE",
+    shirtId,
+    label,
+    targetUrl,
+    createdAt: timestamp,
+    updatedAt: timestamp
+  };
 
-  const response = await client.send(
-    new UpdateCommand({
+  await client.send(
+    new PutCommand({
       TableName: tableName,
-      Key: {
-        pk: `SHIRT#${shirtId}`,
-        sk: "PROFILE"
-      },
-      ConditionExpression: "attribute_not_exists(ownerUserId)",
-      UpdateExpression:
-        "SET ownerUserId = :ownerUserId, claimedAt = :claimedAt, updatedAt = :updatedAt, gsi1pk = :gsi1pk, gsi1sk = :gsi1sk",
-      ExpressionAttributeValues: {
-        ":ownerUserId": ownerUserId,
-        ":claimedAt": timestamp,
-        ":updatedAt": timestamp,
-        ":gsi1pk": `OWNER#${ownerUserId}`,
-        ":gsi1sk": `SHIRT#${shirtId}`
-      },
-      ReturnValues: "ALL_NEW"
+      Item: item,
+      ConditionExpression: "attribute_not_exists(pk)"
     })
   );
 
-  return buildShirtResponse(response.Attributes);
+  return buildShirtResponse(item);
 };
 
-const updateTargetUrl = async ({ shirtId, ownerUserId, targetUrl }) => {
+const updateTargetUrl = async ({ shirtId, targetUrl }) => {
   const timestamp = nowIso();
 
   const response = await client.send(
@@ -111,10 +89,9 @@ const updateTargetUrl = async ({ shirtId, ownerUserId, targetUrl }) => {
         pk: `SHIRT#${shirtId}`,
         sk: "PROFILE"
       },
-      ConditionExpression: "ownerUserId = :ownerUserId",
+      ConditionExpression: "attribute_exists(pk)",
       UpdateExpression: "SET targetUrl = :targetUrl, updatedAt = :updatedAt",
       ExpressionAttributeValues: {
-        ":ownerUserId": ownerUserId,
         ":targetUrl": targetUrl,
         ":updatedAt": timestamp
       },
@@ -125,33 +102,9 @@ const updateTargetUrl = async ({ shirtId, ownerUserId, targetUrl }) => {
   return buildShirtResponse(response.Attributes);
 };
 
-const seedPlaceholderShirt = async ({ shirtId, activationCode, label }) => {
-  const timestamp = nowIso();
-
-  await client.send(
-    new PutCommand({
-      TableName: tableName,
-      Item: {
-        pk: `SHIRT#${shirtId}`,
-        sk: "PROFILE",
-        shirtId,
-        label,
-        activationCode,
-        gsi1pk: `ACTIVATION#${activationCode}`,
-        gsi1sk: "PROFILE",
-        createdAt: timestamp,
-        updatedAt: timestamp
-      },
-      ConditionExpression: "attribute_not_exists(pk)"
-    })
-  );
-};
-
 module.exports = {
-  getShirtByActivationCode,
   getShirtById,
-  listShirtsByOwner,
-  claimShirt,
-  updateTargetUrl,
-  seedPlaceholderShirt
+  listShirts,
+  createShirt,
+  updateTargetUrl
 };

@@ -33,7 +33,7 @@ Prima del deploy reale dovranno essere valorizzati:
 
 ## Sicurezza minima
 
-- Accesso API private protetto con Cognito JWT authorizer.
+- Accesso API private protetto da login admin e token bearer server-side.
 - Bucket frontend non pubblico, accessibile solo da CloudFront.
 - Policy IAM minime per le Lambda.
 - Validazione rigorosa degli URL per evitare redirect malevoli.
@@ -41,8 +41,8 @@ Prima del deploy reale dovranno essere valorizzati:
 ## Roadmap tecnica consigliata
 
 1. Fondazioni AWS e Terraform backend remoto.
-2. Setup Cognito e tabelle DynamoDB.
+2. Setup tabella DynamoDB, variabili admin e package Lambda.
 3. Endpoint redirect pubblico.
-4. Endpoint claim e update link.
+4. Endpoint login admin, create shirt e update link.
 5. Frontend dashboard.
 6. Osservabilita', audit e analytics.

@@ -7,10 +7,11 @@ Separare la definizione infrastrutturale per responsabilita', mantenendo un laye
 ## Struttura
 
 - `infra/terraform/environments/dev`: entrypoint dell'environment.
-- `infra/terraform/modules/auth`: Cognito.
 - `infra/terraform/modules/data`: DynamoDB.
 - `infra/terraform/modules/api`: API Gateway, Lambda, IAM.
 - `infra/terraform/modules/frontend`: S3 + CloudFront.
+
+Nota: nel modulo API il package chiamato `claim` e' stato riutilizzato nel MVP come Lambda di creazione maglietta, per ridurre refactor infrastrutturale iniziale.
 
 ## Filosofia
 

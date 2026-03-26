@@ -18,11 +18,21 @@ variable "links_table_arn" {
   type = string
 }
 
-variable "user_pool_id" {
+variable "admin_email" {
   type = string
 }
 
-variable "user_pool_client_id" {
+variable "admin_password" {
+  type      = string
+  sensitive = true
+}
+
+variable "admin_session_token" {
+  type      = string
+  sensitive = true
+}
+
+variable "fallback_url" {
   type = string
 }
 

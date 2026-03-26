@@ -4,7 +4,6 @@ Questa cartella contiene lo scheletro IaC del progetto ScanMe.
 
 ## Moduli inclusi
 
-- `auth`: Amazon Cognito
 - `data`: Amazon DynamoDB
 - `api`: API Gateway + Lambda + IAM
 - `frontend`: S3 + CloudFront

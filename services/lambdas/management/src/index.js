@@ -1,25 +1,32 @@
 const { ConditionalCheckFailedException } = require("@aws-sdk/client-dynamodb");
-const { getUserContext } = require("../../shared/src/auth");
+const { loginAdmin, parseBody, requireAdmin } = require("../../shared/src/auth");
 const { isHttpError } = require("../../shared/src/errors");
-const { listShirtsByOwner, updateTargetUrl } = require("../../shared/src/repository");
+const { listShirts, updateTargetUrl } = require("../../shared/src/repository");
 const { json } = require("../../shared/src/response");
 const { normalizeShirtId, normalizeTargetUrl } = require("../../shared/src/validation");
 
 exports.handler = async (event) => {
   try {
-    const user = getUserContext(event);
+    const method = event.requestContext?.http?.method;
+    const path = event.requestContext?.http?.path ?? "";
 
-    if (event.requestContext?.http?.method === "GET") {
-      const items = await listShirtsByOwner(user.userId);
+    if (method === "POST" && path === "/v1/admin/login") {
+      const session = loginAdmin(event);
+      return json(200, { session });
+    }
+
+    requireAdmin(event);
+
+    if (method === "GET" && path === "/v1/shirts") {
+      const items = await listShirts();
       return json(200, { items });
     }
 
-    if (event.requestContext?.http?.method === "PUT") {
+    if (method === "PUT") {
       const shirtId = normalizeShirtId(event.pathParameters?.shirt_id);
-      const body = JSON.parse(event.body ?? "{}");
+      const body = parseBody(event);
       const item = await updateTargetUrl({
         shirtId,
-        ownerUserId: user.userId,
         targetUrl: normalizeTargetUrl(body.targetUrl)
       });
 
@@ -33,7 +40,7 @@ exports.handler = async (event) => {
     }
 
     if (error instanceof ConditionalCheckFailedException) {
-      return json(403, { message: "Non puoi modificare questa maglietta." });
+      return json(404, { message: "Maglietta non trovata." });
     }
 
     return json(500, {

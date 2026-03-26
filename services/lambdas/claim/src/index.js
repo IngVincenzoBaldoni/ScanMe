@@ -1,34 +1,41 @@
 const { ConditionalCheckFailedException } = require("@aws-sdk/client-dynamodb");
-const { getUserContext } = require("../../shared/src/auth");
-const { isHttpError } = require("../../shared/src/errors");
-const { claimShirt, getShirtByActivationCode } = require("../../shared/src/repository");
+const { parseBody, requireAdmin } = require("../../shared/src/auth");
+const { isHttpError, HttpError } = require("../../shared/src/errors");
+const { createShirt } = require("../../shared/src/repository");
 const { json } = require("../../shared/src/response");
-const { normalizeActivationCode } = require("../../shared/src/validation");
+const { normalizeTargetUrl } = require("../../shared/src/validation");
+
+const normalizeLabel = (value) => {
+  if (typeof value !== "string" || value.trim().length < 3) {
+    throw new HttpError(400, "Il nome della maglietta deve avere almeno 3 caratteri.");
+  }
+
+  return value.trim();
+};
+
+const generateShirtId = () => {
+  return `shirt-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+};
 
 exports.handler = async (event) => {
   try {
-    const user = getUserContext(event);
-    const body = JSON.parse(event.body ?? "{}");
-    const activationCode = normalizeActivationCode(body.activationCode);
-    const shirt = await getShirtByActivationCode(activationCode);
+    requireAdmin(event);
+    const body = parseBody(event);
 
-    if (!shirt) {
-      return json(404, { message: "Activation code non valido." });
-    }
-
-    const item = await claimShirt({
-      shirtId: shirt.shirtId,
-      ownerUserId: user.userId
+    const item = await createShirt({
+      shirtId: generateShirtId(),
+      label: normalizeLabel(body.label),
+      targetUrl: normalizeTargetUrl(body.targetUrl)
     });
 
-    return json(200, { item });
+    return json(201, { item });
   } catch (error) {
     if (isHttpError(error)) {
       return json(error.statusCode, { message: error.message });
     }
 
     if (error instanceof ConditionalCheckFailedException) {
-      return json(409, { message: "Questa maglietta e' gia stata reclamata." });
+      return json(409, { message: "Esiste gia' una maglietta con questo identificativo." });
     }
 
     return json(500, {

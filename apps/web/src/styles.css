@@ -110,6 +110,11 @@ input {
   margin: 6px 0 0;
 }
 
+.card__content {
+  display: grid;
+  gap: 18px;
+}
+
 .eyebrow {
   margin: 0;
   text-transform: uppercase;
@@ -181,6 +186,31 @@ input {
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
+.qr-preview {
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(248, 250, 252, 0.95), rgba(226, 232, 240, 0.85));
+}
+
+.qr-preview img {
+  width: min(100%, 240px);
+  height: auto;
+  border-radius: 16px;
+  background: white;
+  padding: 10px;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
+}
+
+.info-panel {
+  display: grid;
+  gap: 8px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(248, 250, 252, 0.9);
+}
+
 .meta-row {
   display: flex;
   justify-content: space-between;
@@ -188,6 +218,28 @@ input {
   flex-wrap: wrap;
   color: var(--text-soft);
   font-size: 0.9rem;
+}
+
+.action-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.inline-link,
+.ghost-link {
+  color: var(--primary-dark);
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.ghost-link {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 12px 18px;
+  background: rgba(15, 118, 110, 0.09);
 }
 
 .badge {

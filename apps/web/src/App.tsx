@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { AuthPanel } from "./features/auth/AuthPanel";
-import { ClaimShirtForm } from "./features/shirts/ClaimShirtForm";
+import { CreateShirtForm } from "./features/shirts/CreateShirtForm";
 import { ShirtList } from "./features/shirts/ShirtList";
 import { apiClient } from "./lib/api";
 import { authClient } from "./lib/auth";
@@ -10,7 +10,7 @@ import type { AuthSession, Shirt } from "./lib/types";
 export function App() {
   const [session, setSession] = useState<AuthSession | null>(null);
   const [shirts, setShirts] = useState<Shirt[]>([]);
-  const [busyAction, setBusyAction] = useState<"auth" | "claim" | "save" | "load" | null>("load");
+  const [busyAction, setBusyAction] = useState<"auth" | "create" | "save" | "load" | null>("load");
   const [pageError, setPageError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -42,28 +42,24 @@ export function App() {
     void run();
   }, [session]);
 
-  const handleAuth = async (
-    email: string,
-    password: string,
-    mode: "signin" | "signup"
-  ) => {
+  const handleAuth = async (email: string, password: string) => {
     setBusyAction("auth");
-    const nextSession =
-      mode === "signin"
-        ? await authClient.signIn(email, password)
-        : await authClient.signUp(email, password);
-    setSession(nextSession);
-    setBusyAction(null);
+    try {
+      const nextSession = await authClient.signIn(email, password);
+      setSession(nextSession);
+    } finally {
+      setBusyAction(null);
+    }
   };
 
-  const handleClaim = async (activationCode: string) => {
+  const handleCreateShirt = async (label: string, targetUrl: string) => {
     if (!session) {
-      throw new Error("Effettua il login prima di collegare una maglietta.");
+      throw new Error("Effettua il login prima di creare una maglietta.");
     }
 
-    setBusyAction("claim");
+    setBusyAction("create");
     try {
-      const response = await apiClient.claimShirt(session.accessToken, { activationCode });
+      const response = await apiClient.createShirt(session.accessToken, { label, targetUrl });
       setShirts((currentItems) => [response.item, ...currentItems]);
     } finally {
       setBusyAction(null);
@@ -98,11 +94,11 @@ export function App() {
         <p className="eyebrow">ScanMe</p>
         <h1>Il QR della tua maglietta cambia con te.</h1>
         <p className="lead">
-          Collega la maglietta, scegli il link del giorno e lascia che ogni scansione apra sempre
-          l&apos;ultima destinazione che hai deciso.
+          Crea il tuo QR dinamico, guarda in dashboard il redirect stabile che stamperai sulla
+          maglietta e cambia quando vuoi il link finale che si apre dopo la scansione.
         </p>
         <div className="hero__meta">
-          <span>Frontend mode: {config.useMockAuth ? "mock auth" : "Cognito pending"}</span>
+          <span>Auth mode: {config.useMockAuth ? "mock founder login" : "admin API login"}</span>
           <span>API: {config.apiBaseUrl || "mock browser mode"}</span>
         </div>
       </section>
@@ -123,7 +119,7 @@ export function App() {
 
           {pageError ? <p className="error-banner">{pageError}</p> : null}
 
-          <ClaimShirtForm onSubmit={handleClaim} isBusy={busyAction === "claim"} />
+          <CreateShirtForm onSubmit={handleCreateShirt} isBusy={busyAction === "create"} />
           <ShirtList
             items={shirts}
             onSaveTarget={handleSaveTarget}

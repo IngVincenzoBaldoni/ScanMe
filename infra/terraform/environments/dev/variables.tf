@@ -27,6 +27,30 @@ variable "allowed_cors_origins" {
   default     = ["http://localhost:5173"]
 }
 
+variable "admin_email" {
+  description = "Email usata per il login admin MVP."
+  type        = string
+  default     = "founder@example.com"
+}
+
+variable "admin_password" {
+  description = "Password admin MVP. Sostituire con un valore reale e robusto."
+  type        = string
+  sensitive   = true
+}
+
+variable "admin_session_token" {
+  description = "Token restituito dal login admin e validato dal backend."
+  type        = string
+  sensitive   = true
+}
+
+variable "fallback_url" {
+  description = "URL dashboard o pagina fallback da mostrare quando il QR non e' configurato."
+  type        = string
+  default     = ""
+}
+
 variable "redirect_lambda_package_path" {
   description = "Percorso locale del package zip della Lambda redirect."
   type        = string
@@ -40,7 +64,7 @@ variable "management_lambda_package_path" {
 }
 
 variable "claim_lambda_package_path" {
-  description = "Percorso locale del package zip della Lambda claim."
+  description = "Percorso locale del package zip della Lambda creazione maglietta MVP."
   type        = string
   default     = "PLACEHOLDER/claim.zip"
 }

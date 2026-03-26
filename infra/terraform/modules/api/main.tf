@@ -1,5 +1,3 @@
-data "aws_region" "current" {}
-
 resource "aws_iam_role" "lambda_exec" {
   name = "${var.project_name}-${var.environment}-lambda-exec"
 
@@ -33,8 +31,8 @@ resource "aws_iam_role_policy" "ddb_access" {
         Effect = "Allow"
         Action = [
           "dynamodb:GetItem",
+          "dynamodb:Scan",
           "dynamodb:PutItem",
-          "dynamodb:Query",
           "dynamodb:UpdateItem"
         ]
         Resource = [
@@ -57,6 +55,7 @@ resource "aws_lambda_function" "redirect" {
   environment {
     variables = {
       LINKS_TABLE_NAME = var.links_table_name
+      FALLBACK_URL     = var.fallback_url
     }
   }
 }
@@ -71,8 +70,10 @@ resource "aws_lambda_function" "management" {
 
   environment {
     variables = {
-      LINKS_TABLE_NAME = var.links_table_name
-      USER_POOL_ID     = var.user_pool_id
+      LINKS_TABLE_NAME    = var.links_table_name
+      ADMIN_EMAIL         = var.admin_email
+      ADMIN_PASSWORD      = var.admin_password
+      ADMIN_SESSION_TOKEN = var.admin_session_token
     }
   }
 }
@@ -87,8 +88,10 @@ resource "aws_lambda_function" "claim" {
 
   environment {
     variables = {
-      LINKS_TABLE_NAME = var.links_table_name
-      USER_POOL_ID     = var.user_pool_id
+      LINKS_TABLE_NAME    = var.links_table_name
+      ADMIN_EMAIL         = var.admin_email
+      ADMIN_PASSWORD      = var.admin_password
+      ADMIN_SESSION_TOKEN = var.admin_session_token
     }
   }
 }
@@ -102,18 +105,6 @@ resource "aws_apigatewayv2_api" "this" {
     allow_methods = ["GET", "OPTIONS", "POST", "PUT"]
     allow_origins = var.allowed_cors_origins
     expose_headers = ["location"]
-  }
-}
-
-resource "aws_apigatewayv2_authorizer" "cognito" {
-  api_id           = aws_apigatewayv2_api.this.id
-  authorizer_type  = "JWT"
-  name             = "${var.project_name}-${var.environment}-jwt-authorizer"
-  identity_sources = ["$request.header.Authorization"]
-
-  jwt_configuration {
-    audience = [var.user_pool_client_id]
-    issuer   = "https://cognito-idp.${data.aws_region.current.name}.amazonaws.com/${var.user_pool_id}"
   }
 }
 
@@ -145,27 +136,27 @@ resource "aws_apigatewayv2_route" "redirect" {
 }
 
 resource "aws_apigatewayv2_route" "list_shirts" {
-  api_id             = aws_apigatewayv2_api.this.id
-  route_key          = "GET /v1/shirts"
-  authorization_type = "JWT"
-  authorizer_id      = aws_apigatewayv2_authorizer.cognito.id
-  target             = "integrations/${aws_apigatewayv2_integration.management.id}"
+  api_id    = aws_apigatewayv2_api.this.id
+  route_key = "GET /v1/shirts"
+  target    = "integrations/${aws_apigatewayv2_integration.management.id}"
+}
+
+resource "aws_apigatewayv2_route" "login_admin" {
+  api_id    = aws_apigatewayv2_api.this.id
+  route_key = "POST /v1/admin/login"
+  target    = "integrations/${aws_apigatewayv2_integration.management.id}"
+}
+
+resource "aws_apigatewayv2_route" "create_shirt" {
+  api_id    = aws_apigatewayv2_api.this.id
+  route_key = "POST /v1/shirts"
+  target    = "integrations/${aws_apigatewayv2_integration.claim.id}"
 }
 
 resource "aws_apigatewayv2_route" "update_target" {
-  api_id             = aws_apigatewayv2_api.this.id
-  route_key          = "PUT /v1/shirts/{shirt_id}/target"
-  authorization_type = "JWT"
-  authorizer_id      = aws_apigatewayv2_authorizer.cognito.id
-  target             = "integrations/${aws_apigatewayv2_integration.management.id}"
-}
-
-resource "aws_apigatewayv2_route" "claim_shirt" {
-  api_id             = aws_apigatewayv2_api.this.id
-  route_key          = "POST /v1/shirts/claim"
-  authorization_type = "JWT"
-  authorizer_id      = aws_apigatewayv2_authorizer.cognito.id
-  target             = "integrations/${aws_apigatewayv2_integration.claim.id}"
+  api_id    = aws_apigatewayv2_api.this.id
+  route_key = "PUT /v1/shirts/{shirt_id}/target"
+  target    = "integrations/${aws_apigatewayv2_integration.management.id}"
 }
 
 resource "aws_apigatewayv2_stage" "default" {

@@ -2,14 +2,13 @@ import { useState } from "react";
 import { Card } from "../../components/Card";
 
 type AuthPanelProps = {
-  onLogin: (email: string, password: string, mode: "signin" | "signup") => Promise<void>;
+  onLogin: (email: string, password: string) => Promise<void>;
   isBusy: boolean;
 };
 
 export function AuthPanel({ onLogin, isBusy }: AuthPanelProps) {
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
-  const [email, setEmail] = useState("demo@scanme.app");
-  const [password, setPassword] = useState("Password123!");
+  const [email, setEmail] = useState("founder@example.com");
+  const [password, setPassword] = useState("ChangeMe123!");
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -17,7 +16,7 @@ export function AuthPanel({ onLogin, isBusy }: AuthPanelProps) {
     setError(null);
 
     try {
-      await onLogin(email, password, mode);
+      await onLogin(email, password);
     } catch (submissionError) {
       setError(
         submissionError instanceof Error
@@ -28,22 +27,14 @@ export function AuthPanel({ onLogin, isBusy }: AuthPanelProps) {
   };
 
   return (
-    <Card
-      title="Owner Access"
-      subtitle="Accedi e gestisci il QR della tua maglietta"
-      action={
-        <button className="ghost-button" onClick={() => setMode(mode === "signin" ? "signup" : "signin")}>
-          {mode === "signin" ? "Crea account" : "Ho gia un account"}
-        </button>
-      }
-    >
+    <Card title="Founder Access" subtitle="Accedi alla dashboard amministrativa del tuo MVP">
       <form className="stack" onSubmit={handleSubmit}>
         <label className="field">
-          <span>Email</span>
+          <span>Email admin</span>
           <input value={email} onChange={(event) => setEmail(event.target.value)} type="email" />
         </label>
         <label className="field">
-          <span>Password</span>
+          <span>Password admin</span>
           <input
             value={password}
             onChange={(event) => setPassword(event.target.value)}
@@ -52,7 +43,7 @@ export function AuthPanel({ onLogin, isBusy }: AuthPanelProps) {
         </label>
         {error ? <p className="error-text">{error}</p> : null}
         <button className="primary-button" disabled={isBusy} type="submit">
-          {isBusy ? "Attendere..." : mode === "signin" ? "Accedi" : "Registrati"}
+          {isBusy ? "Accesso..." : "Accedi"}
         </button>
       </form>
     </Card>

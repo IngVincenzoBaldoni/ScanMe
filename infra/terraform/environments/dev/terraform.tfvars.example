@@ -9,6 +9,11 @@ allowed_cors_origins = [
   "https://frontend-domain-placeholder.cloudfront.net"
 ]
 
+admin_email         = "your-admin-email@example.com"
+admin_password      = "PLACEHOLDER_STRONG_PASSWORD"
+admin_session_token = "PLACEHOLDER_RANDOM_SESSION_TOKEN"
+fallback_url        = "https://frontend-domain-placeholder.cloudfront.net"
+
 redirect_lambda_package_path   = "artifacts/redirect.zip"
 management_lambda_package_path = "artifacts/management.zip"
 claim_lambda_package_path      = "artifacts/claim.zip"

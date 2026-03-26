@@ -1,12 +1,9 @@
 export type Shirt = {
   shirtId: string;
   label: string;
-  activationCode?: string;
-  ownerUserId?: string;
   targetUrl?: string;
   updatedAt?: string;
-  claimedAt?: string;
-  status: "unclaimed" | "claimed";
+  createdAt?: string;
 };
 
 export type AuthSession = {
@@ -15,8 +12,14 @@ export type AuthSession = {
   email: string;
 };
 
-export type ClaimPayload = {
-  activationCode: string;
+export type LoginPayload = {
+  email: string;
+  password: string;
+};
+
+export type CreateShirtPayload = {
+  label: string;
+  targetUrl: string;
 };
 
 export type UpdateTargetPayload = {

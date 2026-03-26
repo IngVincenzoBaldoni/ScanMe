@@ -15,7 +15,7 @@ Il prodotto richiede:
 
 ## Decisione
 
-Adottare un'architettura serverless AWS composta da S3, CloudFront, Cognito, API Gateway, Lambda e DynamoDB.
+Adottare un'architettura serverless AWS composta da S3, CloudFront, API Gateway, Lambda e DynamoDB. Per il day-1 dell'MVP l'autenticazione e' semplificata con login admin lato backend; Cognito resta un'evoluzione successiva.
 
 ## Conseguenze positive
 

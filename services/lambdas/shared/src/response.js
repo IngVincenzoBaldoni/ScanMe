@@ -14,7 +14,17 @@ const redirect = (location) => ({
   }
 });
 
+const html = (statusCode, body) => ({
+  statusCode,
+  headers: {
+    "content-type": "text/html; charset=utf-8",
+    "cache-control": "no-store"
+  },
+  body
+});
+
 module.exports = {
   json,
-  redirect
+  redirect,
+  html
 };

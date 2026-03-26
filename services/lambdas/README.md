@@ -5,8 +5,8 @@ Codice iniziale delle funzioni AWS Lambda del progetto.
 ## Handler inclusi
 
 - `redirect`: resolve del target URL pubblico e redirect `302`
-- `claim`: claim della maglietta tramite activation code
-- `management`: lista magliette dell'owner e update del target URL
+- `claim`: creazione di una nuova maglietta dinamica nel MVP
+- `management`: login admin, lista magliette e update del target URL
 
 ## Assunzioni dati
 
@@ -16,8 +16,9 @@ Attributi principali:
 
 - `pk = SHIRT#{shirtId}`
 - `sk = PROFILE`
-- `gsi1pk = ACTIVATION#{activationCode}` finche' la maglietta non e' reclamata
-- `gsi1pk = OWNER#{ownerUserId}` dopo il claim
+- `label = nome visualizzato in dashboard`
+- `targetUrl = link finale che si apre dopo il redirect`
+- `createdAt` e `updatedAt = metadati operativi`
 
 ## Packaging
 
@@ -25,5 +26,5 @@ Lo script `npm run package --workspace @scanme/lambdas` genera zip iniziali in `
 
 Nota importante:
 
-- prima del deploy reale va completata l'inclusione delle dipendenze `node_modules` o introdotto un bundler come `esbuild`;
+- lo script attuale include anche `node_modules`, quindi richiede `npm install` eseguito prima del packaging;
 - per produzione conviene sostituire questo script con un packaging deterministico e una pipeline CI/CD.
