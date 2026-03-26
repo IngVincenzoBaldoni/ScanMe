@@ -1,0 +1,14 @@
+project_name = "scanme"
+environment  = "dev"
+aws_region   = "eu-west-1"
+
+frontend_bucket_name = "scanme-dev-frontend-PLACEHOLDER"
+
+allowed_cors_origins = [
+  "http://localhost:5173",
+  "https://frontend-domain-placeholder.cloudfront.net"
+]
+
+redirect_lambda_package_path   = "artifacts/redirect.zip"
+management_lambda_package_path = "artifacts/management.zip"
+claim_lambda_package_path      = "artifacts/claim.zip"
