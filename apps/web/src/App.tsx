@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { AnalyticsSection } from "./features/analytics/AnalyticsSection";
 import { AuthPanel } from "./features/auth/AuthPanel";
 import { CreateShirtForm } from "./features/shirts/CreateShirtForm";
 import { ShirtList } from "./features/shirts/ShirtList";
@@ -110,7 +111,11 @@ export function App() {
           <section className="dashboard__header">
             <div>
               <p className="eyebrow">Dashboard</p>
-              <h2>{session.email}</h2>
+              <h2>Founder control room</h2>
+              <p className="dashboard__subcopy">
+                Gestisci i tuoi capi, aggiorna il link dietro ogni QR e monitora quante scansioni
+                stanno arrivando nel tempo.
+              </p>
             </div>
             <button className="ghost-button" onClick={handleLogout}>
               Logout
@@ -120,6 +125,7 @@ export function App() {
           {pageError ? <p className="error-banner">{pageError}</p> : null}
 
           <CreateShirtForm onSubmit={handleCreateShirt} isBusy={busyAction === "create"} />
+          <AnalyticsSection items={shirts} />
           <ShirtList
             items={shirts}
             onSaveTarget={handleSaveTarget}

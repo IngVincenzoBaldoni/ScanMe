@@ -1,4 +1,4 @@
-const { getShirtById } = require("../../shared/src/repository");
+const { getShirtById, recordScan } = require("../../shared/src/repository");
 const { isHttpError } = require("../../shared/src/errors");
 const { redirect, html, json } = require("../../shared/src/response");
 const { normalizeShirtId } = require("../../shared/src/validation");
@@ -46,6 +46,7 @@ exports.handler = async (event) => {
       return html(200, renderFallbackPage(shirtId));
     }
 
+    await recordScan(shirt);
     return redirect(shirt.targetUrl);
   } catch (error) {
     if (isHttpError(error)) {

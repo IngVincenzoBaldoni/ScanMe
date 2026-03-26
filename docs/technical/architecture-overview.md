@@ -68,9 +68,11 @@ Il frontend dovra' esporre almeno queste schermate:
 - landing di onboarding;
 - login admin;
 - creazione della prima maglietta;
-- dashboard con lista magliette;
+- dashboard con sezione `I TUOI CAPI`;
+- mock visivi dei capi con QR sul retro;
 - preview del QR code stabile;
 - form di aggiornamento URL;
+- sezione analytics con metriche globali e trend temporali;
 - fallback page per QR non ancora attivati.
 
 ## Evoluzione futura

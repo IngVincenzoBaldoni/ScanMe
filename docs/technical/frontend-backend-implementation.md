@@ -6,7 +6,8 @@ Il frontend iniziale e' una SPA React con tre macro-capacita':
 
 - login admin;
 - creazione di una nuova maglietta digitale;
-- preview del QR stabile e gestione del target URL.
+- preview del QR stabile e gestione del target URL;
+- sezione analytics con scansioni aggregate e giornaliere per capo.
 
 La UI e' progettata per essere semplice da evolvere verso autenticazione piu' robusta, senza rifare la struttura.
 
@@ -18,7 +19,8 @@ Le Lambda implementano i casi d'uso minimi del prodotto:
 - login admin MVP;
 - creazione della maglietta;
 - lista delle magliette;
-- update del target URL.
+- update del target URL;
+- tracking scansioni sul redirect pubblico.
 
 ## Gap intenzionali
 

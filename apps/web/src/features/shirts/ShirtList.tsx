@@ -25,33 +25,45 @@ const buildQrPreviewUrl = (redirectUrl: string) => {
 };
 
 export function ShirtList({ items, onSaveTarget, isBusy }: ShirtListProps) {
-  if (items.length === 0) {
-    return (
-      <Card title="Le Tue Magliette" subtitle="Non hai ancora creato nessun QR dinamico">
-        <EmptyState
-          title="Crea la prima maglietta"
-          description="Appena crei il primo QR, qui vedrai il codice da testare, il redirect pubblico stabile e il link di destinazione modificabile."
-        />
-      </Card>
-    );
-  }
-
   return (
-    <div className="shirt-grid">
-      {items.map((shirt) => (
-        <ShirtCard key={shirt.shirtId} shirt={shirt} onSaveTarget={onSaveTarget} isBusy={isBusy} />
-      ))}
-    </div>
+    <section className="garments-section">
+      <div className="section-heading">
+        <div>
+          <p className="eyebrow">I Tuoi Capi</p>
+          <h2>I QR che puoi modificare in tempo reale</h2>
+        </div>
+      </div>
+
+      {items.length === 0 ? (
+        <Card title="Nessun capo ancora disponibile" subtitle="Crea il primo capo digitale">
+          <EmptyState
+            title="Parti dalla prima maglietta"
+            description="Quando creerai il primo capo, qui vedrai un mock visivo della maglietta, il QR sul retro, il link di destinazione e i controlli per aggiornarlo."
+          />
+        </Card>
+      ) : (
+        <div className="garment-grid">
+          {items.map((shirt) => (
+            <GarmentCard
+              key={shirt.shirtId}
+              shirt={shirt}
+              onSaveTarget={onSaveTarget}
+              isBusy={isBusy}
+            />
+          ))}
+        </div>
+      )}
+    </section>
   );
 }
 
-type ShirtCardProps = {
+type GarmentCardProps = {
   shirt: Shirt;
   onSaveTarget: (shirtId: string, targetUrl: string) => Promise<void>;
   isBusy: boolean;
 };
 
-function ShirtCard({ shirt, onSaveTarget, isBusy }: ShirtCardProps) {
+function GarmentCard({ shirt, onSaveTarget, isBusy }: GarmentCardProps) {
   const [targetUrl, setTargetUrl] = useState(shirt.targetUrl ?? "");
   const [feedback, setFeedback] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -74,13 +86,21 @@ function ShirtCard({ shirt, onSaveTarget, isBusy }: ShirtCardProps) {
   };
 
   return (
-    <Card title={shirt.label} subtitle={`ID: ${shirt.shirtId}`}>
-      <div className="qr-preview">
-        <img alt={`QR code ${shirt.label}`} src={qrPreviewUrl} />
+    <Card title={shirt.label} subtitle={`Capo ID: ${shirt.shirtId}`}>
+      <div className="garment-mock">
+        <div className="garment-mock__shirt">
+          <div className="garment-mock__neck" />
+          <div className="garment-mock__sleeve garment-mock__sleeve--left" />
+          <div className="garment-mock__sleeve garment-mock__sleeve--right" />
+          <div className="garment-mock__body">
+            <span className="garment-mock__label">retro</span>
+            <img alt={`QR code ${shirt.label}`} src={qrPreviewUrl} />
+          </div>
+        </div>
       </div>
 
       <div className="info-panel">
-        <p className="eyebrow">QR pubblico stabile</p>
+        <p className="eyebrow">Link del QR stampato</p>
         <a className="inline-link" href={redirectUrl} rel="noreferrer" target="_blank">
           {redirectUrl}
         </a>
@@ -95,22 +115,22 @@ function ShirtCard({ shirt, onSaveTarget, isBusy }: ShirtCardProps) {
             onChange={(event) => setTargetUrl(event.target.value)}
           />
         </label>
-        <div className="meta-row">
-          <span>Creato: {shirt.createdAt ?? "n/d"}</span>
+        <div className="action-row">
+          <button className="primary-button" disabled={isBusy || !targetUrl} type="submit">
+            {isBusy ? "Salvataggio..." : "Salva nuovo link"}
+          </button>
+          {shirt.targetUrl ? (
+            <a className="ghost-link" href={shirt.targetUrl} rel="noreferrer" target="_blank">
+              Vai al link attuale
+            </a>
+          ) : null}
+        </div>
+        <div className="garment-meta">
+          <span>Scansioni totali: {shirt.analytics.totalScans}</span>
           <span>Ultimo update: {shirt.updatedAt ?? "mai"}</span>
         </div>
         {feedback ? <p className="success-text">{feedback}</p> : null}
         {error ? <p className="error-text">{error}</p> : null}
-        <div className="action-row">
-          <button className="primary-button" disabled={isBusy || !targetUrl} type="submit">
-            {isBusy ? "Salvataggio..." : "Aggiorna destinazione"}
-          </button>
-          {shirt.targetUrl ? (
-            <a className="ghost-link" href={shirt.targetUrl} rel="noreferrer" target="_blank">
-              Apri target corrente
-            </a>
-          ) : null}
-        </div>
       </form>
     </Card>
   );

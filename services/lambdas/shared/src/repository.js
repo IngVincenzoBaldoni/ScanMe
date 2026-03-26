@@ -22,7 +22,17 @@ const buildShirtResponse = (item) => ({
   label: item.label,
   targetUrl: item.targetUrl,
   updatedAt: item.updatedAt,
-  createdAt: item.createdAt
+  createdAt: item.createdAt,
+  analytics: {
+    totalScans: item.scanCount ?? 0,
+    lastScannedAt: item.lastScannedAt,
+    dailyScans: Object.entries(item.dailyScans ?? {})
+      .map(([date, count]) => ({
+        date,
+        count
+      }))
+      .sort((left, right) => left.date.localeCompare(right.date))
+  }
 });
 
 const getShirtById = async (shirtId) => {
@@ -65,7 +75,9 @@ const createShirt = async ({ shirtId, label, targetUrl }) => {
     label,
     targetUrl,
     createdAt: timestamp,
-    updatedAt: timestamp
+    updatedAt: timestamp,
+    scanCount: 0,
+    dailyScans: {}
   };
 
   await client.send(
@@ -102,9 +114,36 @@ const updateTargetUrl = async ({ shirtId, targetUrl }) => {
   return buildShirtResponse(response.Attributes);
 };
 
+const recordScan = async (shirt) => {
+  const timestamp = nowIso();
+  const dayKey = timestamp.slice(0, 10);
+  const nextDailyScans = {
+    ...(shirt.dailyScans ?? {}),
+    [dayKey]: (shirt.dailyScans?.[dayKey] ?? 0) + 1
+  };
+
+  await client.send(
+    new UpdateCommand({
+      TableName: tableName,
+      Key: {
+        pk: `SHIRT#${shirt.shirtId}`,
+        sk: "PROFILE"
+      },
+      UpdateExpression:
+        "SET scanCount = :scanCount, lastScannedAt = :lastScannedAt, dailyScans = :dailyScans",
+      ExpressionAttributeValues: {
+        ":scanCount": (shirt.scanCount ?? 0) + 1,
+        ":lastScannedAt": timestamp,
+        ":dailyScans": nextDailyScans
+      }
+    })
+  );
+};
+
 module.exports = {
   getShirtById,
   listShirts,
   createShirt,
-  updateTargetUrl
+  updateTargetUrl,
+  recordScan
 };

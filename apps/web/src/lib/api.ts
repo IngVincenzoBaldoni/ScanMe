@@ -23,6 +23,24 @@ const request = async <T>(path: string, init: RequestInit): Promise<T> => {
   return body as T;
 };
 
+const buildMockAnalytics = (seed: number) => {
+  const today = new Date();
+  const dailyScans = Array.from({ length: 7 }).map((_, index) => {
+    const day = new Date(today);
+    day.setDate(today.getDate() - (6 - index));
+    return {
+      date: day.toISOString().slice(0, 10),
+      count: [1, 3, 2, 5, 4, 7, 6][(index + seed) % 7]
+    };
+  });
+
+  return {
+    totalScans: dailyScans.reduce((sum, item) => sum + item.count, 0),
+    lastScannedAt: new Date().toISOString(),
+    dailyScans
+  };
+};
+
 const readMockDb = (): Shirt[] => {
   const raw = window.localStorage.getItem(MOCK_DB_KEY);
 
@@ -33,7 +51,8 @@ const readMockDb = (): Shirt[] => {
         label: "ScanMe Founder Tee",
         targetUrl: "https://instagram.com/ingvincenzobaldoni",
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
+        analytics: buildMockAnalytics(0)
       }
     ];
 
@@ -60,7 +79,8 @@ const createMockShirt = (payload: CreateShirtPayload) => {
     label: payload.label.trim(),
     targetUrl: payload.targetUrl.trim(),
     createdAt: now,
-    updatedAt: now
+    updatedAt: now,
+    analytics: buildMockAnalytics(items.length)
   };
 
   writeMockDb([item, ...items]);
