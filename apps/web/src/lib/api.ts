@@ -45,13 +45,32 @@ const readMockDb = (): Shirt[] => {
   const raw = window.localStorage.getItem(MOCK_DB_KEY);
 
   if (!raw) {
+    const now = new Date().toISOString();
     const seedItems: Shirt[] = [
       {
         shirtId: "shirt-demo-001",
         label: "ScanMe Founder Tee",
         targetUrl: "https://instagram.com/ingvincenzobaldoni",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        createdAt: now,
+        updatedAt: now,
+        commerce: {
+          salesChannel: "shopify",
+          orderReference: "SHOPIFY-1001",
+          customerName: "Vincenzo Baldoni",
+          customerEmail: "official.scanme.app@gmail.com",
+          requestedUrl: "https://instagram.com/ingvincenzobaldoni"
+        },
+        product: {
+          model: "Unisex Heavy Cotton Tee",
+          size: "L",
+          color: "Black",
+          placement: "Back upper center",
+          printProvider: "Printify"
+        },
+        operations: {
+          productionStatus: "active",
+          notes: "Capo demo usato per testare scansioni e redirect."
+        },
         analytics: buildMockAnalytics(0)
       }
     ];
@@ -80,6 +99,9 @@ const createMockShirt = (payload: CreateShirtPayload) => {
     targetUrl: payload.targetUrl.trim(),
     createdAt: now,
     updatedAt: now,
+    commerce: payload.commerce,
+    product: payload.product,
+    operations: payload.operations,
     analytics: buildMockAnalytics(items.length)
   };
 

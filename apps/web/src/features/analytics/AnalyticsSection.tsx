@@ -15,6 +15,7 @@ const formatDate = (value?: string) => {
 
 export function AnalyticsSection({ items }: AnalyticsSectionProps) {
   const totalScans = items.reduce((sum, item) => sum + item.analytics.totalScans, 0);
+  const activeTwins = items.filter((item) => item.operations.productionStatus === "active").length;
   const lastScanCandidates = items
     .map((item) => item.analytics.lastScannedAt)
     .filter(Boolean)
@@ -35,7 +36,14 @@ export function AnalyticsSection({ items }: AnalyticsSectionProps) {
           <p className="metric-caption">Somma di tutte le scansioni registrate sui tuoi capi.</p>
         </Card>
         <Card title="Capi monitorati" subtitle={String(items.length)}>
-          <p className="metric-caption">Numero di magliette o capi attualmente visibili in dashboard.</p>
+          <p className="metric-caption">
+            Numero di digital twin attualmente tracciati nel portale interno.
+          </p>
+        </Card>
+        <Card title="Twin attivi" subtitle={String(activeTwins)}>
+          <p className="metric-caption">
+            Capi gia' stampati o consegnati che stanno generando scansioni reali.
+          </p>
         </Card>
         <Card title="Ultima scansione globale" subtitle={formatDate(lastScannedAt)}>
           <p className="metric-caption">Ultimo evento di redirect registrato dal backend.</p>
@@ -47,7 +55,7 @@ export function AnalyticsSection({ items }: AnalyticsSectionProps) {
           <Card
             key={item.shirtId}
             title={item.label}
-            subtitle={`${item.analytics.totalScans} scansioni`}
+            subtitle={`${item.analytics.totalScans} scansioni • ${item.operations.productionStatus}`}
           >
             <div className="chart-row">
               {item.analytics.dailyScans.map((point) => (

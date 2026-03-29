@@ -2,11 +2,11 @@
 
 ## Visione
 
-ScanMe consente a chi indossa una maglietta con QR code di trasformare quel QR in un touchpoint dinamico personale: social profile, portfolio, canzone, landing page, evento o contenuto promozionale.
+ScanMe consente a chi acquista una maglietta con QR code di ricevere un capo fisico con una identita' digitale gia' pronta: il QR stampato resta stabile, mentre il link di destinazione puo' essere cambiato nel tempo.
 
 ## Problema risolto
 
-Un QR statico stampato su un capo perde valore nel tempo. Il progetto risolve questo limite introducendo un layer software che rende il link di destinazione aggiornabile dal proprietario della maglietta.
+Un QR statico stampato su un capo perde valore nel tempo. Il progetto risolve questo limite introducendo un layer software che rende il link di destinazione aggiornabile e collega ogni capo fisico a un digital twin gestito dal brand.
 
 ## Valore di business
 
@@ -18,17 +18,18 @@ Un QR statico stampato su un capo perde valore nel tempo. Il progetto risolve qu
 ## Capacita' minime del prodotto
 
 - Ogni maglietta ha un identificativo univoco associato al QR code.
-- L'utente registra o reclama la maglietta tramite piattaforma.
-- L'utente autenticato aggiorna il link di destinazione.
+- Il brand crea un digital twin per ogni ordine o sample.
+- Il QR stampato rimanda sempre a un redirect stabile della piattaforma.
+- Il link live puo' essere cambiato senza ristampare il capo.
 - Chi scansiona il QR viene reindirizzato sempre verso l'ultima destinazione impostata.
 
 ## MVP consigliato
 
-- Registrazione/login utente.
-- Claim della maglietta tramite codice di attivazione.
-- Dashboard con modifica URL.
+- Portale interno admin per creare digital twin.
+- Acquisizione dati ordine, cliente e produzione.
+- Dashboard operativa con modifica URL.
 - Redirect pubblico via endpoint sicuro.
-- Validazione URL e audit base dell'ultima modifica.
+- Validazione URL e analytics base delle scansioni.
 
 ## Estensioni future
 
@@ -36,4 +37,5 @@ Un QR statico stampato su un capo perde valore nel tempo. Il progetto risolve qu
 - Analytics scansioni.
 - Scheduling temporale del link.
 - Profili pubblici personalizzati.
-- Multi-shirt management per ambassador o creator.
+- Portale cliente self-service post-acquisto.
+- Integrazione Shopify/Printify automatica.

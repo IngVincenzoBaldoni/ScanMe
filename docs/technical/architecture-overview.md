@@ -51,32 +51,38 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-  O[Owner autenticato] --> FE[Frontend Dashboard]
+  O[Founder autenticato] --> FE[Portale interno]
   FE --> API[API Gateway]
-  API --> L2[Lambda Manage Link]
+  API --> L2[Lambda Manage Digital Twin]
   L2 --> DDB[DynamoDB]
 ```
 
 ## Motivazioni FE
 
-- `React + TypeScript` e' una scelta solida per una dashboard utente con form, stato autenticazione e validazioni.
+- `React + TypeScript` e' una scelta solida per un portale operativo con form strutturati, stato autenticazione e validazioni.
 - `Vite` accelera lo sviluppo locale e produce un output statico semplice da distribuire.
-- Una SPA e' sufficiente per dashboard, onboarding e gestione link.
+- Una SPA e' sufficiente per backoffice interno, creazione digital twin e gestione link.
 - Hosting statico su S3/CloudFront e' economico e semplice da distribuire.
 - Il frontend dialoga con API Gateway tramite HTTPS.
 - Per il day-1 e' stato scelto un login admin semplificato, piu' veloce da portare online rispetto a Cognito.
 
 ## Motivazioni BE
 
-- Lambda isola bene i casi d'uso: redirect, login admin, creazione QR, update link.
+- Lambda isola bene i casi d'uso: redirect, login admin, creazione digital twin, update link.
 - API Gateway gestisce routing e CORS senza costi fissi elevati.
 - DynamoDB offre letture rapide e latenza bassa, adatta al redirect.
 
 ## Dominio dati MVP
 
-- `shirts`: maglietta, redirect stabile e link di destinazione corrente.
+- `shirts`: digital twin della maglietta con:
+  - identita' tecnica del capo
+  - dati ordine e cliente
+  - dati prodotto e produzione
+  - link richiesto in checkout
+  - link live corrente
+  - analytics di scansione
 
-Per l'MVP tutto puo' convivere in una singola tabella DynamoDB.
+Per l'MVP tutto convive in una singola tabella DynamoDB che tiene traccia dei digital twin.
 
 ## Nota implementativa FE
 
@@ -84,11 +90,11 @@ Il frontend dovra' esporre almeno queste schermate:
 
 - landing di onboarding;
 - login admin;
-- creazione della prima maglietta;
-- dashboard con sezione `I TUOI CAPI`;
-- mock visivi dei capi con QR sul retro;
+- portale interno con sezione creazione digital twin;
+- catalogo digital twin con mock visivi dei capi e QR sul retro;
+- dettaglio ordine, cliente e produzione;
 - preview del QR code stabile;
-- form di aggiornamento URL;
+- form di aggiornamento URL live;
 - sezione analytics con metriche globali e trend temporali;
 - fallback page per QR non ancora attivati.
 

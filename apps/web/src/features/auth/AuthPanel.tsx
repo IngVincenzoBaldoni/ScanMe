@@ -27,7 +27,7 @@ export function AuthPanel({ onLogin, isBusy }: AuthPanelProps) {
   };
 
   return (
-    <Card title="Founder Access" subtitle="Accedi alla dashboard amministrativa del tuo MVP">
+    <Card title="Internal Access" subtitle="Accedi solo al portale operativo del founder">
       <form className="stack" onSubmit={handleSubmit}>
         <label className="field">
           <span>Email admin</span>
@@ -45,6 +45,9 @@ export function AuthPanel({ onLogin, isBusy }: AuthPanelProps) {
         <button className="primary-button" disabled={isBusy} type="submit">
           {isBusy ? "Accesso..." : "Accedi"}
         </button>
+        <a className="ghost-link" href="/">
+          Torna al portale pubblico
+        </a>
       </form>
     </Card>
   );

@@ -28,19 +28,37 @@ Il target attuale e' un MVP single-admin. Gli endpoint privati sono protetti da 
 
 ### `GET /v1/shirts`
 
-- Scopo: recuperare la lista delle magliette gestite dall'admin.
+- Scopo: recuperare la lista dei digital twin gestiti dall'admin.
 - Auth: `Bearer token`.
 
 ### `POST /v1/shirts`
 
-- Scopo: creare una nuova maglietta con QR dinamico.
+- Scopo: creare un nuovo digital twin con QR dinamico.
 - Auth: `Bearer token`.
 - Payload:
 
 ```json
 {
   "label": "ScanMe Founder Tee",
-  "targetUrl": "https://example.com/my-profile"
+  "targetUrl": "https://example.com/my-profile",
+  "commerce": {
+    "salesChannel": "shopify",
+    "orderReference": "SHOPIFY-1002",
+    "customerName": "Mario Rossi",
+    "customerEmail": "mario@example.com",
+    "requestedUrl": "https://example.com/my-profile"
+  },
+  "product": {
+    "model": "Unisex Heavy Cotton Tee",
+    "size": "L",
+    "color": "Black",
+    "placement": "Back upper center",
+    "printProvider": "Printify"
+  },
+  "operations": {
+    "productionStatus": "draft",
+    "notes": "Ordine pronto per creazione QR"
+  }
 }
 ```
 

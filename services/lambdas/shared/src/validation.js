@@ -18,6 +18,36 @@ const normalizeShirtId = (value) => {
   return value.trim();
 };
 
+const normalizeRequiredText = (value, fieldName, minLength = 1) => {
+  if (!isNonEmptyString(value) || value.trim().length < minLength) {
+    throw new HttpError(400, `${fieldName} obbligatorio.`);
+  }
+
+  return value.trim();
+};
+
+const normalizeOptionalText = (value) => {
+  if (value === undefined || value === null || value === "") {
+    return "";
+  }
+
+  if (typeof value !== "string") {
+    throw new HttpError(400, "Il valore testuale non e' valido.");
+  }
+
+  return value.trim();
+};
+
+const normalizeEmail = (value, fieldName = "Email") => {
+  const normalized = normalizeRequiredText(value, fieldName);
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)) {
+    throw new HttpError(400, `${fieldName} non valida.`);
+  }
+
+  return normalized.toLowerCase();
+};
+
 const normalizeTargetUrl = (value) => {
   if (!isNonEmptyString(value)) {
     throw new HttpError(400, "Target URL obbligatorio.");
@@ -40,6 +70,9 @@ const normalizeTargetUrl = (value) => {
 
 module.exports = {
   normalizeActivationCode,
+  normalizeEmail,
+  normalizeOptionalText,
+  normalizeRequiredText,
   normalizeShirtId,
   normalizeTargetUrl
 };

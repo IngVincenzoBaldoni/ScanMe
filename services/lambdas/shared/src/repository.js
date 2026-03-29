@@ -23,6 +23,24 @@ const buildShirtResponse = (item) => ({
   targetUrl: item.targetUrl,
   updatedAt: item.updatedAt,
   createdAt: item.createdAt,
+  commerce: {
+    salesChannel: item.salesChannel ?? "manual",
+    orderReference: item.orderReference ?? "N/A",
+    customerName: item.customerName ?? "Non assegnato",
+    customerEmail: item.customerEmail ?? "n/a@scanme.local",
+    requestedUrl: item.requestedUrl ?? item.targetUrl ?? "https://example.com"
+  },
+  product: {
+    model: item.productModel ?? "Legacy twin",
+    size: item.productSize ?? "N/A",
+    color: item.productColor ?? "N/A",
+    placement: item.printPlacement ?? "Back",
+    printProvider: item.printProvider ?? "Manual"
+  },
+  operations: {
+    productionStatus: item.productionStatus ?? "draft",
+    notes: item.operationsNotes ?? ""
+  },
   analytics: {
     totalScans: item.scanCount ?? 0,
     lastScannedAt: item.lastScannedAt,
@@ -66,7 +84,14 @@ const listShirts = async () => {
   });
 };
 
-const createShirt = async ({ shirtId, label, targetUrl }) => {
+const createShirt = async ({
+  shirtId,
+  label,
+  targetUrl,
+  commerce,
+  product,
+  operations
+}) => {
   const timestamp = nowIso();
   const item = {
     pk: `SHIRT#${shirtId}`,
@@ -74,6 +99,18 @@ const createShirt = async ({ shirtId, label, targetUrl }) => {
     shirtId,
     label,
     targetUrl,
+    salesChannel: commerce.salesChannel,
+    orderReference: commerce.orderReference,
+    customerName: commerce.customerName,
+    customerEmail: commerce.customerEmail,
+    requestedUrl: commerce.requestedUrl,
+    productModel: product.model,
+    productSize: product.size,
+    productColor: product.color,
+    printPlacement: product.placement,
+    printProvider: product.printProvider,
+    productionStatus: operations.productionStatus,
+    operationsNotes: operations.notes,
     createdAt: timestamp,
     updatedAt: timestamp,
     scanCount: 0,

@@ -1,27 +1,38 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AnalyticsSection } from "./features/analytics/AnalyticsSection";
 import { AuthPanel } from "./features/auth/AuthPanel";
+import { PublicPortal } from "./features/public/PublicPortal";
 import { CreateShirtForm } from "./features/shirts/CreateShirtForm";
 import { ShirtList } from "./features/shirts/ShirtList";
 import { apiClient } from "./lib/api";
 import { authClient } from "./lib/auth";
 import { config } from "./lib/config";
-import type { AuthSession, Shirt } from "./lib/types";
+import type { AuthSession, CreateShirtPayload, Shirt } from "./lib/types";
+
+const getPortalMode = () => {
+  return window.location.pathname.startsWith("/internal") ? "internal" : "public";
+};
 
 export function App() {
+  const portalMode = useMemo(() => getPortalMode(), []);
   const [session, setSession] = useState<AuthSession | null>(null);
   const [shirts, setShirts] = useState<Shirt[]>([]);
   const [busyAction, setBusyAction] = useState<"auth" | "create" | "save" | "load" | null>("load");
   const [pageError, setPageError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (portalMode !== "internal") {
+      setBusyAction(null);
+      return;
+    }
+
     const existingSession = authClient.getSession();
     setSession(existingSession);
     setBusyAction(null);
-  }, []);
+  }, [portalMode]);
 
   useEffect(() => {
-    if (!session) {
+    if (portalMode !== "internal" || !session) {
       setShirts([]);
       return;
     }
@@ -34,14 +45,14 @@ export function App() {
         const response = await apiClient.listShirts(session.accessToken);
         setShirts(response.items);
       } catch (error) {
-        setPageError(error instanceof Error ? error.message : "Impossibile caricare le magliette.");
+        setPageError(error instanceof Error ? error.message : "Impossibile caricare i digital twin.");
       } finally {
         setBusyAction(null);
       }
     };
 
     void run();
-  }, [session]);
+  }, [portalMode, session]);
 
   const handleAuth = async (email: string, password: string) => {
     setBusyAction("auth");
@@ -53,15 +64,16 @@ export function App() {
     }
   };
 
-  const handleCreateShirt = async (label: string, targetUrl: string) => {
+  const handleCreateShirt = async (payload: CreateShirtPayload) => {
     if (!session) {
-      throw new Error("Effettua il login prima di creare una maglietta.");
+      throw new Error("Effettua il login prima di creare un digital twin.");
     }
 
     setBusyAction("create");
     try {
-      const response = await apiClient.createShirt(session.accessToken, { label, targetUrl });
+      const response = await apiClient.createShirt(session.accessToken, payload);
       setShirts((currentItems) => [response.item, ...currentItems]);
+      return response.item;
     } finally {
       setBusyAction(null);
     }
@@ -89,18 +101,25 @@ export function App() {
     setShirts([]);
   };
 
+  if (portalMode === "public") {
+    return <PublicPortal />;
+  }
+
   return (
     <main className="shell">
       <section className="hero">
-        <p className="eyebrow">ScanMe</p>
-        <h1>Il QR della tua maglietta cambia con te.</h1>
+        <p className="eyebrow">ScanMe Internal</p>
+        <h1>Portale interno per creare il digital twin di ogni maglietta.</h1>
         <p className="lead">
-          Crea il tuo QR dinamico, guarda in dashboard il redirect stabile che stamperai sulla
-          maglietta e cambia quando vuoi il link finale che si apre dopo la scansione.
+          Questo spazio e' separato dal portale pubblico: qui registri ordini, generi QR
+          stampabili, allinei Printify e monitori i capi gia' in circolazione.
         </p>
         <div className="hero__meta">
           <span>Auth mode: {config.useMockAuth ? "mock founder login" : "admin API login"}</span>
           <span>API: {config.apiBaseUrl || "mock browser mode"}</span>
+          <a className="ghost-link ghost-link--light" href="/">
+            Vai al portale pubblico
+          </a>
         </div>
       </section>
 
@@ -110,11 +129,11 @@ export function App() {
         <div className="dashboard">
           <section className="dashboard__header">
             <div>
-              <p className="eyebrow">Dashboard</p>
-              <h2>Founder control room</h2>
+              <p className="eyebrow">Internal Portal</p>
+              <h2>Founder operations desk</h2>
               <p className="dashboard__subcopy">
-                Gestisci i tuoi capi, aggiorna il link dietro ogni QR e monitora quante scansioni
-                stanno arrivando nel tempo.
+                Crea i digital twin, traccia dati ordine e cliente, scarica il QR pronto per
+                Printify e osserva le scansioni che arrivano dai capi gia' stampati.
               </p>
             </div>
             <button className="ghost-button" onClick={handleLogout}>
